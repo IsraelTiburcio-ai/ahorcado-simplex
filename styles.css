@@ -170,6 +170,10 @@ body::before {
   -webkit-tap-highlight-color: transparent;
 }
 
+.btn-icono span {
+  display: none;
+}
+
 .btn-icono .icono {
   width: 20px;
   height: 20px;
@@ -974,6 +978,12 @@ h1 {
   .recap__texto { font-size: 16px; }
   .como-jugar li { font-size: 17px; }
   .marca__sub { font-size: 13px; }
+}
+
+/* En móvil los iconos ahorran espacio; los botones conservan aria-label. */
+@media (min-width: 560px) {
+  .btn-icono span { display: inline; }
+  .btn-icono { padding: 0 14px; }
 }
 
 /* iPad vertical y pantallas altas: columna centrada con ancho controlado */
