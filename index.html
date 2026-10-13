@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Ahorcado Simplex: juego educativo para reforzar el vocabulario del Gimnasio 3, Método Simplex.">
+  <meta name="theme-color" content="#070d1a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Ahorcado Simplex">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Ahorcado Simplex · Adivina el concepto</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Sprite de iconos SVG reutilizables -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-engrane" viewBox="0 0 48 48">
+        <circle cx="24" cy="24" r="16" fill="none" stroke="currentColor" stroke-width="7" stroke-dasharray="4.2 4.18"></circle>
+        <circle cx="24" cy="24" r="13" fill="currentColor"></circle>
+        <circle cx="24" cy="24" r="5" fill="#0c1630"></circle>
+      </symbol>
+      <symbol id="i-sonido-on" viewBox="0 0 24 24">
+        <path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="currentColor"></path>
+        <path d="M15.5 9a4 4 0 0 1 0 6M18.2 6.5a7.6 7.6 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+      </symbol>
+      <symbol id="i-sonido-off" viewBox="0 0 24 24">
+        <path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="currentColor"></path>
+        <path d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+      </symbol>
+      <symbol id="i-salir" viewBox="0 0 24 24">
+        <path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+      </symbol>
+      <symbol id="i-ok" viewBox="0 0 24 24">
+        <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path>
+      </symbol>
+      <symbol id="i-no" viewBox="0 0 24 24">
+        <path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"></path>
+      </symbol>
+      <symbol id="i-reloj" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"></circle>
+        <path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+      </symbol>
+    </defs>
+  </svg>
+
+  <div class="app">
+    <header class="barra">
+      <div class="marca">
+        <svg class="marca__icono" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><use href="#i-engrane"></use></svg>
+        <div>
+          <p class="marca__nombre">Ahorcado Simplex</p>
+          <p class="marca__sub">Gimnasio 3 · Método Simplex</p>
+        </div>
+      </div>
+      <div class="barra__acciones">
+        <button id="btn-salir" class="btn-icono" type="button" hidden>
+          <svg class="icono" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i-salir"></use></svg>
+          <span>Salir</span>
+        </button>
+        <button id="btn-mute" class="btn-icono" type="button" aria-pressed="false" aria-label="Silenciar sonido">
+          <svg class="icono" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use id="icono-mute" href="#i-sonido-on"></use></svg>
+          <span id="txt-mute">Sonido</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ============ PANTALLA: INICIO ============ -->
+    <main id="pantalla-inicio" class="pantalla">
+      <section class="inicio" aria-labelledby="titulo-inicio">
+        <div class="inicio__hero">
+          <div class="inicio__engranes" aria-hidden="true">
+            <svg class="engrane-deco engrane-deco--a" viewBox="0 0 48 48" focusable="false"><use href="#i-engrane"></use></svg>
+            <svg class="engrane-deco engrane-deco--b" viewBox="0 0 48 48" focusable="false"><use href="#i-engrane"></use></svg>
+            <svg class="engrane-deco engrane-deco--c" viewBox="0 0 48 48" focusable="false"><use href="#i-engrane"></use></svg>
+          </div>
+          <p class="kicker">Gimnasio 3 · Método Simplex</p>
+          <h1 id="titulo-inicio" tabindex="-1" data-foco>AHORCADO SIMPLEX</h1>
+          <p class="inicio__sub">Adivina el concepto</p>
+        </div>
+
+        <div class="card inicio__panel">
+          <h2 class="etiqueta-seccion" id="etiqueta-rondas">Palabras por partida</h2>
+          <div class="opciones" id="opciones-rondas" role="group" aria-labelledby="etiqueta-rondas"></div>
+          <button id="btn-empezar" class="btn btn--primario btn--grande" type="button">Empezar partida</button>
+          <p class="nota">Máximo 90 segundos por partida · <span id="total-banco"></span></p>
+        </div>
+
+        <ol class="card como-jugar" aria-label="Cómo jugar">
+          <li>Lee la pista académica de la ronda.</li>
+          <li>Elige letras con el teclado en pantalla o con tu teclado físico.</li>
+          <li>Cada error detiene un engrane. Si se detienen todos, se revela la palabra.</li>
+        </ol>
+      </section>
+    </main>
+
+    <!-- ============ PANTALLA: JUEGO ============ -->
+    <main id="pantalla-juego" class="pantalla" hidden>
+      <h1 class="sr-only">Ahorcado Simplex, partida en curso</h1>
+
+      <section id="hud" class="hud" data-zona="normal" aria-label="Estado de la partida">
+        <div class="hud__fila">
+          <p id="txt-ronda" class="hud__ronda">Ronda 1 de 4</p>
+          <div class="hud__tiempo">
+            <span class="hud__etiqueta">Tiempo</span>
+            <span id="txt-tiempo" class="hud__valor">01:30</span>
+          </div>
+        </div>
+        <div id="progreso" class="progreso" aria-hidden="true"></div>
+        <div class="barra-tiempo" aria-hidden="true">
+          <span id="barra-tiempo" class="barra-tiempo__relleno"></span>
+        </div>
+        <dl class="chips">
+          <div class="chip">
+            <dt>Palabras acertadas</dt>
+            <dd id="chip-aciertos">0 de 4</dd>
+          </div>
+          <div class="chip">
+            <dt>Letras falladas</dt>
+            <dd id="chip-fallos">0</dd>
+          </div>
+          <div class="chip">
+            <dt>Racha</dt>
+            <dd id="chip-racha">0</dd>
+          </div>
+        </dl>
+      </section>
+
+      <div class="juego">
+        <div class="juego__principal">
+          <section class="pista" aria-labelledby="pista-etiqueta">
+            <div class="pista__cabecera">
+              <span id="pista-etiqueta" class="pista__etiqueta">Pista académica</span>
+              <span id="pista-tema" class="pista__tema"></span>
+            </div>
+            <p id="pista-texto" class="pista__texto" tabindex="-1" data-foco></p>
+          </section>
+
+          <div id="palabra" class="palabra" role="group" aria-label="Palabra oculta"></div>
+
+          <div id="maquina-wrap" class="maquina-wrap">
+            <div id="maquina" class="maquina" aria-hidden="true"></div>
+            <p id="txt-intentos" class="intentos">Intentos: 6 / 6</p>
+          </div>
+
+          <p id="mensaje" class="mensaje mensaje--neutral" role="status" aria-live="polite">Elige una letra.</p>
+        </div>
+
+        <div class="juego__teclado">
+          <div id="teclado" class="teclado" role="group" aria-label="Letras del alfabeto"></div>
+
+          <section id="panel-ronda" class="panel-ronda card" aria-labelledby="panel-titulo" hidden>
+            <h2 id="panel-titulo" class="panel__titulo" tabindex="-1"></h2>
+            <p id="panel-pista" class="panel__pista"></p>
+            <p id="panel-texto" class="panel__texto"></p>
+            <button id="btn-siguiente" class="btn btn--primario btn--grande" type="button">Siguiente palabra</button>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <!-- ============ PANTALLA: RESULTADOS ============ -->
+    <main id="pantalla-resultados" class="pantalla" hidden>
+      <section class="card resultados" aria-labelledby="res-titulo">
+        <p class="kicker">Resultado de la partida</p>
+        <h1 id="res-titulo" tabindex="-1" data-foco>Partida completa</h1>
+
+        <dl class="stats">
+          <div class="stat">
+            <dt>Palabras acertadas</dt>
+            <dd id="st-aciertos">0 de 4</dd>
+          </div>
+          <div class="stat">
+            <dt>Letras falladas</dt>
+            <dd id="st-letras">0</dd>
+          </div>
+          <div class="stat">
+            <dt>Tiempo</dt>
+            <dd id="st-tiempo">00:00</dd>
+          </div>
+          <div class="stat">
+            <dt>Mejor racha</dt>
+            <dd id="st-racha">0</dd>
+          </div>
+        </dl>
+
+        <h2 class="etiqueta-seccion">Repaso de conceptos</h2>
+        <ol id="recap" class="recap"></ol>
+        <p id="recap-nota" class="nota" hidden></p>
+
+        <div class="acciones">
+          <button id="btn-replay" class="btn btn--primario btn--grande" type="button">Jugar otra vez</button>
+          <button id="btn-inicio" class="btn btn--secundario" type="button">Cambiar número de palabras</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
