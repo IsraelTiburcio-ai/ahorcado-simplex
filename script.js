@@ -171,6 +171,8 @@
     btnInicio: $('#btn-inicio')
   };
 
+  var resultsBridge = window.OptiLabResults ? window.OptiLabResults.create('ahorcado-simplex') : { start: function () {}, complete: function () {}, cancel: function () {} };
+
   // ---------- Estado de la partida ----------
   var estado = {
     pantalla: 'inicio',
@@ -180,6 +182,7 @@
     ronda: null,
     aciertos: 0,
     letrasFalladas: 0,
+    letrasIntentadas: 0,
     racha: 0,
     mejorRacha: 0,
     inicioMs: 0,
@@ -497,6 +500,7 @@
       return;
     }
 
+    estado.letrasIntentadas++;
     if (r.letrasUnicas[letra]) {
       r.acertadas[letra] = true;
       var veces = 0;
@@ -609,6 +613,7 @@
     estado.motivoFin = motivo;
     estado.tiempoUsadoMs = Math.min(CFG.duracionSeg * 1000, Date.now() - estado.inicioMs);
     mostrarResultados();
+    resultsBridge.complete({ reason: motivo === 'tiempo' ? 'time-limit' : 'completed', correct: estado.aciertos, total: estado.palabras.length, attempts: estado.letrasIntentadas, errors: estado.letrasFalladas, durationMs: Math.max(0, Math.round(estado.tiempoUsadoMs)) });
   }
 
   function crearIconoRecap(resultado) {
@@ -700,12 +705,14 @@
     estado.indice = -1;
     estado.aciertos = 0;
     estado.letrasFalladas = 0;
+    estado.letrasIntentadas = 0;
     estado.racha = 0;
     estado.mejorRacha = 0;
     estado.recap = [];
     estado.ronda = null;
     estado.motivoFin = null;
     estado.tiempoUsadoMs = 0;
+    resultsBridge.start();
     renderProgreso();
     mostrarPantalla('juego');
     iniciarTemporizador();
@@ -760,6 +767,7 @@
     el.btnSalir.addEventListener('click', function () {
       if (window.confirm('¿Salir de la partida? Se perderá el progreso de esta partida.')) {
         detenerTemporizador();
+        resultsBridge.cancel();
         estado.ronda = null;
         mostrarPantalla('inicio');
       }
